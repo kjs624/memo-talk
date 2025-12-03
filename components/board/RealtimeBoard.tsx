@@ -135,6 +135,12 @@ export default function RealtimeBoard({
         const x = e.clientX - 100
         const y = e.clientY - 100
 
+        // If in storage (private board), save permanently. Otherwise 24h expiration.
+        const isStorage = boardName === '나의 보관소'
+        const expiresAt = isStorage
+            ? new Date('9999-12-31').toISOString()
+            : new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+
         const { error } = await supabase.from('memos').insert({
             board_id: boardId,
             user_id: user.id,
@@ -143,7 +149,7 @@ export default function RealtimeBoard({
             position_x: x,
             position_y: y,
             rotation: (Math.random() * 4) - 2,
-            expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+            expires_at: expiresAt,
         })
 
         if (error) {
