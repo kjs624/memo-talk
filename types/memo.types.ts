@@ -11,4 +11,5 @@ export interface Memo {
     rotation: number
     expires_at: string
     created_at: string
+    media_url?: string | null
 }

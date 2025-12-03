@@ -7,7 +7,7 @@ import { Paperclip, X } from 'lucide-react'
 export default function MemoEditor({
     onSubmit
 }: {
-    onSubmit: (content: string, color: string) => void
+    onSubmit: (content: string, color: string, mediaUrl?: string | null) => void
 }) {
     const supabase = createClient()
     const [content, setContent] = useState('')
@@ -38,7 +38,9 @@ export default function MemoEditor({
     }
 
     const uploadFile = async (file: File): Promise<string> => {
-        const fileName = `${Date.now()}-${file.name}`
+        // Sanitize filename: use timestamp + random string + extension
+        const fileExt = file.name.split('.').pop()
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`
 
         const { error } = await supabase.storage
             .from('memo-uploads')
@@ -61,11 +63,7 @@ export default function MemoEditor({
         setIsSubmitting(true)
 
         try {
-            let finalContent = content
-
-            if (uploadedFile) {
-                finalContent = await uploadFile(uploadedFile)
-            }
+            // Removed: finalContent replacement logic. We now handle mediaUrl separately.
 
             if (content.trim() && !uploadedFile) {
                 const moderationRes = await fetch('/api/moderation', {
@@ -83,7 +81,20 @@ export default function MemoEditor({
                 }
             }
 
-            onSubmit(finalContent, color)
+            // Pass both content and mediaUrl (if any)
+            // If uploadedFile exists, finalContent is the media URL from uploadFile()
+            // BUT we want to support text + media. 
+            // So we need to change the onSubmit signature or how we pass data.
+            // For now, let's assume the parent handles it, but we need to pass both.
+            // Let's modify the onSubmit prop signature first.
+
+            let mediaUrl = null
+            if (uploadedFile) {
+                mediaUrl = await uploadFile(uploadedFile)
+            }
+
+            onSubmit(content, color, mediaUrl)
+
             setContent('')
             setUploadedFile(null)
             setUploadProgress(0)

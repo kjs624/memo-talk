@@ -1,26 +1,27 @@
+'use client'
 import Link from 'next/link'
 
 export default function BoardHeader({ name }: { name: string }) {
     return (
-        <div className="absolute top-4 left-4 z-10 flex gap-4 items-center">
-            <div className="bg-gradient-to-br from-[#8B5A3C] via-[#A0694F] to-[#8B5A3C] text-white px-6 py-3 rounded-lg shadow-[inset_0_2px_4px_rgba(139,69,19,0.5),inset_0_-2px_4px_rgba(0,0,0,0.3),0_4px_8px_rgba(0,0,0,0.3)] backdrop-blur-sm border-2 border-[#654321]">
-                <h1 className="text-2xl font-bold tracking-wide">{name}</h1>
+        <div className="absolute top-0 left-0 right-0 h-16 bg-wood-pattern shadow-lg z-30 flex items-center justify-center border-b-8 border-[#5d4037]">
+            {/* Realistic Wood Texture Overlay */}
+            <div className="absolute inset-0 bg-[url('/wood-texture.png')] opacity-20 pointer-events-none mix-blend-overlay"></div>
+
+            {/* Title Plate */}
+            <div className="relative bg-[#8d6e63] px-8 py-2 rounded-lg shadow-inner border-2 border-[#5d4037] transform hover:scale-105 transition-transform cursor-default">
+                <div className="absolute inset-0 bg-black/10 rounded-lg pointer-events-none"></div>
+                <h1 className="text-2xl font-bold text-white drop-shadow-md relative z-10 font-handwriting tracking-wider">
+                    {name}
+                </h1>
+
+                {/* Screws */}
+                <div className="absolute top-2 left-2 w-2 h-2 rounded-full bg-[#3e2723] shadow-inner"></div>
+                <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#3e2723] shadow-inner"></div>
+                <div className="absolute bottom-2 left-2 w-2 h-2 rounded-full bg-[#3e2723] shadow-inner"></div>
+                <div className="absolute bottom-2 right-2 w-2 h-2 rounded-full bg-[#3e2723] shadow-inner"></div>
             </div>
 
-            <div className="flex gap-2">
-                <Link
-                    href="/board/common"
-                    className="bg-white/80 hover:bg-white text-wood-dark px-4 py-2 rounded-lg shadow-md font-bold transition-colors backdrop-blur-sm"
-                >
-                    📢 공통 게시판
-                </Link>
-                <Link
-                    href="/board/my"
-                    className="bg-white/80 hover:bg-white text-wood-dark px-4 py-2 rounded-lg shadow-md font-bold transition-colors backdrop-blur-sm"
-                >
-                    📦 나의 게시판
-                </Link>
-            </div>
+            {/* Navigation removed - using ArchiveDrawer instead */}
         </div>
     )
 }

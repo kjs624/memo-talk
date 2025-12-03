@@ -14,7 +14,7 @@ const colorMap = {
     blue: 'bg-memo-blue',
 }
 
-export default function MemoCard({ memo }: { memo: Memo }) {
+export default function MemoCard({ memo, isStatic = false }: { memo: Memo, isStatic?: boolean }) {
     const supabase = createClient()
     const [userId, setUserId] = useState<string | null>(null)
     const [showModal, setShowModal] = useState(false)
@@ -113,50 +113,64 @@ export default function MemoCard({ memo }: { memo: Memo }) {
     }
 
     const renderContent = () => {
-        const content = memo.content.trim()
+        const content = memo.content?.trim() || ''
+        const mediaUrl = memo.media_url
 
-        if (isImageUrl(content)) {
+        // Case 1: Media Only (Legacy support or new media-only)
+        if (mediaUrl && !content) {
+            const isVideo = mediaUrl.match(/\.(mp4|webm|ogg)$/i)
+            if (isVideo) {
+                return (
+                    <video src={mediaUrl} className="max-w-full max-h-full object-contain rounded pointer-events-none" muted loop autoPlay />
+                )
+            }
+            return <img src={mediaUrl} alt="Memo" className="max-w-full max-h-full object-contain rounded pointer-events-none" />
+        }
+
+        // Case 2: Text Only
+        if (!mediaUrl && content) {
+            // Legacy check for URL in content (if migration didn't happen)
+            if (isImageUrl(content)) return <img src={content} alt="Memo" className="max-w-full max-h-full object-contain rounded pointer-events-none" />
+
+            const textClass = getTextClass(content)
             return (
-                <img
-                    src={content}
-                    alt="Memo image"
-                    className="max-w-full max-h-full object-contain rounded pointer-events-none"
-                />
+                <p className={`break-words w-full h-full flex items-center justify-center overflow-hidden pointer-events-none select-none leading-tight px-1 ${textClass}`}>
+                    {content}
+                </p>
             )
         }
 
-        if (isVideoUrl(content)) {
+        // Case 3: Both (Mixed)
+        if (mediaUrl && content) {
+            const isVideo = mediaUrl.match(/\.(mp4|webm|ogg)$/i)
             return (
-                <video
-                    src={content}
-                    className="max-w-full max-h-full object-contain rounded pointer-events-none"
-                    muted
-                    loop
-                    autoPlay
-                >
-                    Your browser does not support the video tag.
-                </video>
+                <div className="flex flex-col w-full h-full p-1 gap-1 pointer-events-none">
+                    <div className="flex-1 overflow-hidden flex items-center justify-center bg-black/5 rounded">
+                        {isVideo ? (
+                            <video src={mediaUrl} className="max-w-full max-h-full object-contain" muted loop autoPlay />
+                        ) : (
+                            <img src={mediaUrl} alt="Memo" className="max-w-full max-h-full object-contain" />
+                        )}
+                    </div>
+                    <p className="text-[10px] line-clamp-2 leading-tight flex-none h-auto">
+                        {content}
+                    </p>
+                </div>
             )
         }
 
-        const textClass = getTextClass(content)
-
-        return (
-            <p className={`break-words w-full h-full flex items-center justify-center overflow-hidden pointer-events-none select-none leading-tight px-1 ${textClass}`}>
-                {content}
-            </p>
-        )
+        return null
     }
 
     return (
         <>
             <motion.div
                 onDoubleClick={handleDoubleClick}
-                style={{ left: memo.position_x, top: memo.position_y, position: 'absolute' }}
-                initial={{ rotate: memo.rotation, scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1, rotate: memo.rotation }}
+                style={isStatic ? { position: 'relative', width: '100%', height: '100%' } : { left: memo.position_x, top: memo.position_y, position: 'absolute' }}
+                initial={isStatic ? { opacity: 0, scale: 0.9 } : { rotate: memo.rotation, scale: 0, opacity: 0 }}
+                animate={isStatic ? { opacity: 1, scale: 1 } : { scale: 1, opacity: 1, rotate: memo.rotation }}
                 exit={{ y: 1000, opacity: 0, rotate: 45, transition: { duration: 0.6, ease: "easeIn" } }}
-                className={`w-48 h-48 p-4 shadow-memo hover:shadow-memo-hover flex items-center justify-center text-center ${colorMap[memo.color]} font-handwriting relative group cursor-pointer overflow-hidden`}
+                className={`w-48 h-48 p-4 shadow-memo hover:shadow-memo-hover flex items-center justify-center text-center ${colorMap[memo.color]} font-handwriting relative group cursor-pointer overflow-hidden ${isStatic ? 'transform-none' : ''}`}
                 whileHover={{ scale: 1.05, zIndex: 10, rotate: 0 }}
             >
                 <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-20">

@@ -8,6 +8,7 @@ import { Memo } from '@/types/memo.types'
 import MemoCard from '../memo/MemoCard'
 import MemoEditor from '../memo/MemoEditor'
 import { AnimatePresence } from 'framer-motion'
+import ArchiveDrawer from './ArchiveDrawer'
 
 export default function RealtimeBoard({
     boardId,
@@ -68,7 +69,7 @@ export default function RealtimeBoard({
         }
     }, [boardId, supabase])
 
-    const [pendingMemo, setPendingMemo] = useState<{ content: string, color: string } | null>(null)
+    const [pendingMemo, setPendingMemo] = useState<{ content: string, color: string, mediaUrl?: string | null } | null>(null)
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
 
     useEffect(() => {
@@ -81,12 +82,15 @@ export default function RealtimeBoard({
         return () => window.removeEventListener('mousemove', handleMouseMove)
     }, [pendingMemo])
 
-    const handleMemoSubmit = (content: string, color: string) => {
+    const handleMemoSubmit = (content: string, color: string, mediaUrl?: string | null) => {
         // If content is too long and is text (not a URL), split into multiple memos
+        // BUT if we have mediaUrl, we shouldn't split because we can't duplicate the media easily/logically.
+        // Also if it's mixed content, we treat it as a single memo for now.
+
         const isUrl = content.trim().startsWith('http')
 
-        if (!isUrl && content.length > 150) {
-            // Split into chunks of 120 characters
+        if (!mediaUrl && !isUrl && content.length > 150) {
+            // Split into chunks of 120 characters (Only for text-only memos)
             const chunks: string[] = []
             let remainingText = content
 
@@ -112,13 +116,14 @@ export default function RealtimeBoard({
                 setTimeout(() => {
                     setPendingMemo({
                         content: `${chunk}${index < chunks.length - 1 ? '...' : ''}`,
-                        color
+                        color,
+                        mediaUrl: null
                     })
                 }, index * 500) // Delay each memo by 500ms
             })
         } else {
-            // Single memo
-            setPendingMemo({ content, color })
+            // Single memo (Text, Media, or Both)
+            setPendingMemo({ content, color, mediaUrl })
         }
     }
 
@@ -150,6 +155,7 @@ export default function RealtimeBoard({
             position_y: y,
             rotation: (Math.random() * 4) - 2,
             expires_at: expiresAt,
+            media_url: pendingMemo.mediaUrl
         })
 
         if (error) {
@@ -183,11 +189,21 @@ export default function RealtimeBoard({
                             transform: 'rotate(5deg)'
                         }}
                     >
-                        {pendingMemo.content}
+                        {pendingMemo.mediaUrl ? (
+                            <div className="w-full h-full flex flex-col">
+                                <img src={pendingMemo.mediaUrl} className="flex-1 object-contain min-h-0" alt="Preview" />
+                                {pendingMemo.content && <p className="text-sm truncate mt-1">{pendingMemo.content}</p>}
+                            </div>
+                        ) : (
+                            pendingMemo.content
+                        )}
                     </div>
                 )}
 
                 {!pendingMemo && <MemoEditor onSubmit={handleMemoSubmit} />}
+
+                {/* Archive Drawer */}
+                <ArchiveDrawer />
             </CorkBoard>
         </div>
     )
