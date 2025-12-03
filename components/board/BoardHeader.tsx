@@ -18,7 +18,7 @@ export default function BoardHeader({ name }: { name: string }) {
                     href="/board/my"
                     className="bg-white/80 hover:bg-white text-wood-dark px-4 py-2 rounded-lg shadow-md font-bold transition-colors backdrop-blur-sm"
                 >
-                    📦 나의 보관소
+                    📦 나의 게시판
                 </Link>
             </div>
         </div>

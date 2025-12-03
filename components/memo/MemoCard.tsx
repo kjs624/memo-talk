@@ -42,8 +42,6 @@ export default function MemoCard({ memo }: { memo: Memo }) {
             alert('삭제 실패')
         } else {
             console.log('✅ Memo deleted successfully from DB:', memoId)
-            // Realtime will handle the actual state update
-            // But if Realtime doesn't work, the animation will still play
         }
     }
 
@@ -62,7 +60,7 @@ export default function MemoCard({ memo }: { memo: Memo }) {
             const { data: newBoard, error: createError } = await supabase
                 .from('boards')
                 .insert({
-                    name: '나의 보관소',
+                    name: '나의 게시판',
                     type: 'private',
                     created_by: userId
                 })
@@ -71,32 +69,27 @@ export default function MemoCard({ memo }: { memo: Memo }) {
 
             if (createError || !newBoard) {
                 console.error('Board create error:', createError)
-                return alert('보관함 생성 실패')
+                return alert('게시판 생성 실패')
             }
             privateBoard = newBoard
         }
 
-        // TypeScript now knows privateBoard is not null
         const boardId = privateBoard!.id
 
-        const { error: copyError } = await supabase
+        // Move memo to private board and make it permanent
+        const { error: moveError } = await supabase
             .from('memos')
-            .insert({
+            .update({
                 board_id: boardId,
-                user_id: userId,
-                content: memo.content,
-                color: memo.color,
-                position_x: Math.floor(Math.random() * (window.innerWidth - 200)) + 50,
-                position_y: Math.floor(Math.random() * (window.innerHeight - 200)) + 50,
-                rotation: (Math.random() * 4) - 2,
                 expires_at: new Date('9999-12-31').toISOString()
             })
+            .eq('id', memo.id)
 
-        if (copyError) {
-            console.error('Archive error:', copyError)
-            alert('보관 실패')
+        if (moveError) {
+            console.error('Move error:', moveError)
+            alert('이동 실패')
         } else {
-            alert('보관소에 보관되었습니다! 📦')
+            alert('나의 게시판으로 이동되었습니다! 📦')
         }
     }
 
@@ -171,7 +164,7 @@ export default function MemoCard({ memo }: { memo: Memo }) {
                         <button
                             onClick={handleArchive}
                             className="p-1.5 bg-white/50 hover:bg-white rounded-full text-blue-600 transition-colors pointer-events-auto"
-                            title="보관소에 보관"
+                            title="나의 게시판으로 이동"
                         >
                             <Archive size={16} />
                         </button>

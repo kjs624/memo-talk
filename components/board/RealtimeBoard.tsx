@@ -136,7 +136,7 @@ export default function RealtimeBoard({
         const y = e.clientY - 100
 
         // If in storage (private board), save permanently. Otherwise 24h expiration.
-        const isStorage = boardName === '나의 보관소'
+        const isStorage = boardName === '나의 게시판'
         const expiresAt = isStorage
             ? new Date('9999-12-31').toISOString()
             : new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()

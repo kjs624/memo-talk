@@ -8,6 +8,7 @@ const config: Config = {
     theme: {
         extend: {
             fontFamily: {
+                sans: ['Jua', 'sans-serif'],
                 handwriting: ['var(--font-handwriting)', 'cursive'],
             },
             colors: {

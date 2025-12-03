@@ -23,7 +23,7 @@ export default async function MyArchivePage() {
         const { data: newBoard, error } = await supabase
             .from('boards')
             .insert({
-                name: '나의 보관소',
+                name: '나의 게시판',
                 type: 'private',
                 created_by: user.id
             })
@@ -48,7 +48,7 @@ export default async function MyArchivePage() {
         <RealtimeBoard
             boardId={board.id}
             initialMemos={initialMemos || []}
-            boardName="나의 보관소"
+            boardName="나의 게시판"
         />
     )
 }
