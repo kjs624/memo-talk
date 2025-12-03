@@ -1,8 +1,1 @@
-{
-    "crons": [
-        {
-            "path": "/api/memos/cleanup",
-            "schedule": "0 0 * * *"
-        }
-    ]
-}
+{}

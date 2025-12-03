@@ -62,7 +62,7 @@ export default function MemoCard({ memo }: { memo: Memo }) {
             const { data: newBoard, error: createError } = await supabase
                 .from('boards')
                 .insert({
-                    name: '나의 타임캡슐',
+                    name: '나의 보관소',
                     type: 'private',
                     created_by: userId
                 })
@@ -96,7 +96,7 @@ export default function MemoCard({ memo }: { memo: Memo }) {
             console.error('Archive error:', copyError)
             alert('보관 실패')
         } else {
-            alert('타임캡슐에 보관되었습니다! 🎁')
+            alert('보관소에 보관되었습니다! 📦')
         }
     }
 
@@ -171,7 +171,7 @@ export default function MemoCard({ memo }: { memo: Memo }) {
                         <button
                             onClick={handleArchive}
                             className="p-1.5 bg-white/50 hover:bg-white rounded-full text-blue-600 transition-colors pointer-events-auto"
-                            title="타임캡슐에 보관"
+                            title="보관소에 보관"
                         >
                             <Archive size={16} />
                         </button>

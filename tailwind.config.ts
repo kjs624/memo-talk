@@ -8,14 +8,13 @@ const config: Config = {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['"Gamja Flower"', 'cursive', 'sans-serif'],
-                handwriting: ['"Gamja Flower"', 'cursive'],
+                handwriting: ['var(--font-handwriting)', 'cursive'],
             },
             colors: {
                 background: "var(--background)",
                 foreground: "var(--foreground)",
-                cork: '#D4A574',       // 코르크판 배경
-                wood: '#8B5A3C',        // 나무 테두리
+                cork: '#D4A574',
+                wood: '#8B5A3C',
                 'memo-yellow': '#FFEB3B',
                 'memo-pink': '#FF80AB',
                 'memo-green': '#69F0AE',
