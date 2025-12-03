@@ -76,10 +76,13 @@ export default function MemoCard({ memo }: { memo: Memo }) {
             privateBoard = newBoard
         }
 
+        // TypeScript now knows privateBoard is not null
+        const boardId = privateBoard.id
+
         const { error: copyError } = await supabase
             .from('memos')
             .insert({
-                board_id: privateBoard.id,
+                board_id: boardId,
                 user_id: userId,
                 content: memo.content,
                 color: memo.color,
