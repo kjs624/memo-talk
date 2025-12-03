@@ -69,7 +69,7 @@ export default function MemoCard({ memo }: { memo: Memo }) {
                 .select()
                 .single()
 
-            if (createError) {
+            if (createError || !newBoard) {
                 console.error('Board create error:', createError)
                 return alert('보관함 생성 실패')
             }
