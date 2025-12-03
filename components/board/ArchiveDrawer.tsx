@@ -53,11 +53,11 @@ export default function ArchiveDrawer() {
             {/* Toggle Button */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="fixed bottom-4 left-4 z-50 bg-wood text-white p-3 rounded-full shadow-lg hover:bg-wood-dark transition-colors flex items-center gap-2 border-2 border-[#5d4037]"
+                className="fixed bottom-4 left-4 z-50 bg-wood text-white p-2 sm:p-3 rounded-full shadow-lg hover:bg-wood-dark transition-colors flex items-center gap-2 border-2 border-[#5d4037] text-sm sm:text-base"
             >
-                <Archive size={20} />
+                <Archive size={18} className="sm:w-5 sm:h-5" />
                 <span className="font-bold hidden sm:inline">나의 보관함</span>
-                {isOpen ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
+                {isOpen ? <ChevronDown size={14} className="sm:w-4 sm:h-4" /> : <ChevronUp size={14} className="sm:w-4 sm:h-4" />}
             </button>
 
             {/* Drawer */}
@@ -68,20 +68,26 @@ export default function ArchiveDrawer() {
                         animate={{ y: 0 }}
                         exit={{ y: '100%' }}
                         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                        className="fixed bottom-0 left-0 right-0 h-72 bg-[url('/cork.webp')] shadow-[0_-4px_20px_rgba(0,0,0,0.5)] z-40 border-t-8 border-[#5d4037] flex flex-col"
+                        drag="y"
+                        dragConstraints={{ top: 0, bottom: 0 }}
+                        dragElastic={0.2}
+                        onDragEnd={(e, info) => {
+                            if (info.offset.y > 100) setIsOpen(false)
+                        }}
+                        className="fixed bottom-0 left-0 right-0 h-64 sm:h-72 bg-[url('/cork.webp')] shadow-[0_-4px_20px_rgba(0,0,0,0.5)] z-40 border-t-8 border-[#5d4037] flex flex-col touch-none"
                     >
-                        <div className="bg-[#5d4037] text-white px-4 py-1 text-sm font-bold flex justify-between items-center">
+                        <div className="bg-[#5d4037] text-white px-4 py-2 text-xs sm:text-sm font-bold flex justify-between items-center cursor-grab active:cursor-grabbing">
                             <span>📦 나의 보관함 (My Board)</span>
-                            <button onClick={() => setIsOpen(false)} className="hover:text-gray-300">닫기</button>
+                            <button onClick={() => setIsOpen(false)} className="hover:text-gray-300 px-2 py-1">닫기</button>
                         </div>
-                        <div className="flex-1 overflow-x-auto p-6 flex items-center gap-6 scrollbar-thin scrollbar-thumb-wood scrollbar-track-transparent">
+                        <div className="flex-1 overflow-x-auto p-4 sm:p-6 flex items-center gap-4 sm:gap-6 scrollbar-thin scrollbar-thumb-wood scrollbar-track-transparent">
                             {loading ? (
-                                <div className="text-black/50 w-full text-center font-bold">로딩 중...</div>
+                                <div className="text-black/50 w-full text-center font-bold text-sm">로딩 중...</div>
                             ) : memos.length === 0 ? (
-                                <div className="text-black/50 w-full text-center font-bold">보관된 메모가 없습니다.</div>
+                                <div className="text-black/50 w-full text-center font-bold text-sm">보관된 메모가 없습니다.</div>
                             ) : (
                                 memos.map(memo => (
-                                    <div key={memo.id} className="relative flex-none w-48 h-48 transform hover:-translate-y-2 transition-transform duration-300">
+                                    <div key={memo.id} className="relative flex-none w-36 h-36 sm:w-48 sm:h-48 transform hover:-translate-y-2 transition-transform duration-300">
                                         <MemoCard memo={memo} isStatic={true} />
                                     </div>
                                 ))

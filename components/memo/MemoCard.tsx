@@ -170,7 +170,7 @@ export default function MemoCard({ memo, isStatic = false }: { memo: Memo, isSta
                 initial={isStatic ? { opacity: 0, scale: 0.9 } : { rotate: memo.rotation, scale: 0, opacity: 0 }}
                 animate={isStatic ? { opacity: 1, scale: 1 } : { scale: 1, opacity: 1, rotate: memo.rotation }}
                 exit={{ y: 1000, opacity: 0, rotate: 45, transition: { duration: 0.6, ease: "easeIn" } }}
-                className={`w-48 h-48 p-4 shadow-memo hover:shadow-memo-hover flex items-center justify-center text-center ${colorMap[memo.color]} font-handwriting relative group cursor-pointer overflow-hidden ${isStatic ? 'transform-none' : ''}`}
+                className={`w-36 h-36 sm:w-48 sm:h-48 p-3 sm:p-4 shadow-memo hover:shadow-memo-hover flex items-center justify-center text-center ${colorMap[memo.color]} font-handwriting relative group cursor-pointer overflow-hidden ${isStatic ? 'transform-none' : ''}`}
                 whileHover={{ scale: 1.05, zIndex: 10, rotate: 0 }}
             >
                 <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-20">

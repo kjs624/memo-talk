@@ -117,7 +117,7 @@ export default function MemoEditor({
         return (
             <button
                 onClick={() => setIsOpen(true)}
-                className="fixed bottom-8 left-1/2 -translate-x-1/2 rounded-full bg-wood px-6 py-3 text-white shadow-lg hover:bg-opacity-90 transition-all transform hover:scale-105 font-bold z-40"
+                className="fixed bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 rounded-full bg-wood px-5 sm:px-6 py-2.5 sm:py-3 text-white shadow-lg hover:bg-opacity-90 transition-all transform hover:scale-105 font-bold z-40 text-sm sm:text-base"
             >
                 메모 작성하기
             </button>
@@ -125,21 +125,21 @@ export default function MemoEditor({
     }
 
     return (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
-            <div className="w-80 rounded-lg bg-white p-4 shadow-2xl">
+        <div className="fixed bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 z-50 w-[90%] sm:w-80">
+            <div className="rounded-lg bg-white p-3 sm:p-4 shadow-2xl">
                 {uploadedFile ? (
                     <div className="mb-3 p-3 bg-gray-100 rounded-lg relative">
                         <button
                             onClick={() => setUploadedFile(null)}
-                            className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+                            className="absolute top-2 right-2 p-1.5 sm:p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
                         >
-                            <X size={14} />
+                            <X size={16} />
                         </button>
                         <p className="text-sm text-gray-700 truncate pr-8">{uploadedFile.name}</p>
                         <button
                             onClick={handleSubmit}
                             disabled={isSubmitting}
-                            className="mt-2 w-full rounded bg-wood px-4 py-2 text-white hover:bg-opacity-90 disabled:opacity-50"
+                            className="mt-2 w-full rounded bg-wood px-4 py-3 sm:py-2 text-white hover:bg-opacity-90 disabled:opacity-50 font-bold"
                         >
                             {isSubmitting ? '업로드 중...' : '메모 붙이기'}
                         </button>
@@ -155,7 +155,7 @@ export default function MemoEditor({
                             className={`h-32 w-full resize-none p-3 rounded shadow-inner focus:outline-none whitespace-pre-wrap break-words overflow-x-hidden ${color === 'yellow' ? 'bg-memo-yellow' :
                                 color === 'pink' ? 'bg-memo-pink' :
                                     color === 'green' ? 'bg-memo-green' : 'bg-memo-blue'
-                                } font-handwriting text-lg`}
+                                } font-handwriting text-base sm:text-lg`}
                             autoFocus
                         />
 
@@ -165,7 +165,7 @@ export default function MemoEditor({
                                     <button
                                         key={c}
                                         onClick={() => setColor(c)}
-                                        className={`h-6 w-6 rounded-full border-2 transition-transform hover:scale-110 ${color === c ? 'border-gray-600 scale-110' : 'border-transparent'
+                                        className={`h-8 w-8 sm:h-6 sm:w-6 rounded-full border-2 transition-transform hover:scale-110 ${color === c ? 'border-gray-600 scale-110' : 'border-transparent'
                                             } ${c === 'yellow' ? 'bg-memo-yellow' :
                                                 c === 'pink' ? 'bg-memo-pink' :
                                                     c === 'green' ? 'bg-memo-green' : 'bg-memo-blue'
@@ -174,8 +174,8 @@ export default function MemoEditor({
                                 ))}
                             </div>
 
-                            <label className="cursor-pointer inline-flex items-center gap-1 px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-xs transition-colors">
-                                <Paperclip size={14} />
+                            <label className="cursor-pointer inline-flex items-center gap-1 px-3 py-2 sm:px-2 sm:py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm sm:text-xs transition-colors">
+                                <Paperclip size={18} className="sm:w-[14px]" />
                                 <input
                                     type="file"
                                     accept="image/*,video/*"
@@ -187,7 +187,7 @@ export default function MemoEditor({
 
                         <button
                             onClick={() => setIsOpen(false)}
-                            className="mt-2 w-full text-sm text-gray-500 hover:text-gray-700"
+                            className="mt-2 w-full text-sm text-gray-500 hover:text-gray-700 py-2"
                         >
                             닫기
                         </button>
