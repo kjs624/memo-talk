@@ -77,7 +77,7 @@ export default function MemoCard({ memo }: { memo: Memo }) {
         }
 
         // TypeScript now knows privateBoard is not null
-        const boardId = privateBoard.id
+        const boardId = privateBoard!.id
 
         const { error: copyError } = await supabase
             .from('memos')
