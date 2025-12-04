@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { motion, AnimatePresence } from 'framer-motion'
-import { User, ChevronRight, Plus, X, LogOut } from 'lucide-react'
+import { User, ChevronRight, Plus, X, LogOut, Menu } from 'lucide-react'
 
 interface Board {
     id: string
@@ -55,14 +55,14 @@ export default function UserBoardMenu() {
 
     return (
         <>
-            {/* Toggle Button (Bottom Right) */}
+            {/* Toggle Button (Top Right) */}
             <motion.button
                 onClick={() => setIsOpen(true)}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                className="fixed bottom-6 right-6 z-40 w-16 h-16 rounded-full bg-wood text-white shadow-2xl flex items-center justify-center hover:bg-wood-dark transition-colors border-4 border-white"
+                className="fixed top-4 right-4 z-40 w-12 h-12 rounded-full bg-wood text-white shadow-lg flex items-center justify-center hover:bg-wood-dark transition-colors border-2 border-white"
             >
-                <User size={28} />
+                <Menu size={24} />
             </motion.button>
 
             {/* Overlay */}
