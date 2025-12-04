@@ -2,7 +2,8 @@ import { createServerClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import RealtimeBoard from '@/components/board/RealtimeBoard'
 
-export default async function BoardPage({ params }: { params: { id: string } }) {
+export default async function BoardPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params
     const supabase = await createServerClient()
 
     const { data: { user } } = await supabase.auth.getUser()
@@ -13,7 +14,7 @@ export default async function BoardPage({ params }: { params: { id: string } }) 
     const { data: board } = await supabase
         .from('boards')
         .select('*')
-        .eq('id', params.id)
+        .eq('id', id)
         .single()
 
     if (!board) {
@@ -35,8 +36,8 @@ export default async function BoardPage({ params }: { params: { id: string } }) 
     const { data: memos } = await supabase
         .from('memos')
         .select('*')
-        .eq('board_id', params.id)
+        .eq('board_id', id)
         .order('created_at', { ascending: false })
 
-    return <RealtimeBoard boardId={params.id} initialMemos={memos || []} boardName={board.name} />
+    return <RealtimeBoard boardId={id} initialMemos={memos || []} boardName={board.name} />
 }
