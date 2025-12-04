@@ -4,6 +4,38 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 
+async function ensureCommonBoard(supabase: any) {
+    // Check if "common" board exists
+    const { data: existingBoard } = await supabase
+        .from('boards')
+        .select('id')
+        .eq('name', '공통 게시판')
+        .maybeSingle()
+
+    if (existingBoard) {
+        return existingBoard.id
+    }
+
+    // Create common board if it doesn't exist
+    const { data: newBoard, error } = await supabase
+        .from('boards')
+        .insert({
+            name: '공통 게시판',
+            type: 'common',
+            is_public: true,
+            description: '모두가 함께 사용하는 공개 게시판입니다'
+        })
+        .select('id')
+        .single()
+
+    if (error) {
+        console.error('Failed to create common board:', error)
+        return null
+    }
+
+    return newBoard.id
+}
+
 export async function login(formData: FormData) {
     const supabase = await createClient()
 
@@ -22,8 +54,16 @@ export async function login(formData: FormData) {
     }
 
     console.log('✅ Login successful for:', data.email)
+
+    // Ensure common board exists
+    const boardId = await ensureCommonBoard(supabase)
+
     revalidatePath('/', 'layout')
-    redirect('/board/common')
+    if (boardId) {
+        redirect(`/board/${boardId}`)
+    } else {
+        redirect('/boards')
+    }
 }
 
 export async function signup(formData: FormData) {
@@ -46,6 +86,13 @@ export async function signup(formData: FormData) {
     console.log('✅ Signup successful:', signupData)
     console.log('User needs email confirmation:', signupData.user?.identities?.length === 0)
 
+    // Ensure common board exists
+    const boardId = await ensureCommonBoard(supabase)
+
     revalidatePath('/', 'layout')
-    redirect('/board/common')
+    if (boardId) {
+        redirect(`/board/${boardId}`)
+    } else {
+        redirect('/boards')
+    }
 }
