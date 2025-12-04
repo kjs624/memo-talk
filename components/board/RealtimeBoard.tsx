@@ -11,6 +11,8 @@ import { AnimatePresence } from 'framer-motion'
 import ArchiveDrawer from './ArchiveDrawer'
 import TutorialOverlay from '../tutorial/TutorialOverlay'
 import { useTutorial } from '@/hooks/useTutorial'
+import UserBoardMenu from './UserBoardMenu'
+
 
 export default function RealtimeBoard({
     boardId,

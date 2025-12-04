@@ -21,14 +21,7 @@ export default function BoardHeader({ name }: { name: string }) {
                 <div className="absolute bottom-2 right-2 w-2 h-2 rounded-full bg-[#3e2723] shadow-inner"></div>
             </div>
 
-            <div className="absolute right-2 sm:right-8 top-1/2 -translate-y-1/2 flex gap-2 sm:gap-4">
-                <Link
-                    href="/boards"
-                    className="bg-white/80 hover:bg-white text-wood-dark px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg shadow-md font-bold transition-colors backdrop-blur-sm text-xs sm:text-base"
-                >
-                    📋 게시판
-                </Link>
-            </div>
+            {/* User menu moved to UserBoardMenu component */}
         </div>
     )
 }
