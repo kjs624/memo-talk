@@ -12,7 +12,6 @@ import ArchiveDrawer from './ArchiveDrawer'
 import TutorialOverlay from '../tutorial/TutorialOverlay'
 import { useTutorial } from '@/hooks/useTutorial'
 
-
 export default function RealtimeBoard({
     boardId,
     initialMemos,
@@ -25,7 +24,6 @@ export default function RealtimeBoard({
     const [memos, setMemos] = useState<Memo[]>(initialMemos)
     const supabase = createClient()
     const { isFirstVisit, currentStep, nextStep, skipTutorial, completeTutorial } = useTutorial()
-
 
     useEffect(() => {
         setMemos(initialMemos)
@@ -88,14 +86,9 @@ export default function RealtimeBoard({
     }, [pendingMemo])
 
     const handleMemoSubmit = (content: string, color: string, mediaUrl?: string | null) => {
-        // If content is too long and is text (not a URL), split into multiple memos
-        // BUT if we have mediaUrl, we shouldn't split because we can't duplicate the media easily/logically.
-        // Also if it's mixed content, we treat it as a single memo for now.
-
         const isUrl = content.trim().startsWith('http')
 
         if (!mediaUrl && !isUrl && content.length > 150) {
-            // Split into chunks of 120 characters (Only for text-only memos)
             const chunks: string[] = []
             let remainingText = content
 
@@ -105,10 +98,9 @@ export default function RealtimeBoard({
                     break
                 }
 
-                // Find last space before 120 chars
                 let splitIndex = 120
                 const lastSpace = remainingText.lastIndexOf(' ', 120)
-                if (lastSpace > 80) { // Don't split too early
+                if (lastSpace > 80) {
                     splitIndex = lastSpace
                 }
 
@@ -116,7 +108,6 @@ export default function RealtimeBoard({
                 remainingText = remainingText.slice(splitIndex).trim()
             }
 
-            // Create multiple memos with slight position offset
             chunks.forEach((chunk, index) => {
                 setTimeout(() => {
                     setPendingMemo({
@@ -124,10 +115,9 @@ export default function RealtimeBoard({
                         color,
                         mediaUrl: null
                     })
-                }, index * 500) // Delay each memo by 500ms
+                }, index * 500)
             })
         } else {
-            // Single memo (Text, Media, or Both)
             setPendingMemo({ content, color, mediaUrl })
         }
     }
@@ -141,11 +131,9 @@ export default function RealtimeBoard({
             return
         }
 
-        // Adjust position to center the memo on cursor
         const x = e.clientX - 100
         const y = e.clientY - 100
 
-        // If in storage (private board), save permanently. Otherwise 24h expiration.
         const isStorage = boardName === '나의 게시판'
         const expiresAt = isStorage
             ? new Date('9999-12-31').toISOString()
@@ -181,7 +169,6 @@ export default function RealtimeBoard({
                     ))}
                 </AnimatePresence>
 
-                {/* Ghost Memo for Placement */}
                 {pendingMemo && (
                     <div
                         className={`fixed pointer-events-none w-48 h-48 p-6 shadow-2xl flex items-center justify-center text-center font-handwriting text-2xl z-50 opacity-80 ${pendingMemo.color === 'yellow' ? 'bg-memo-yellow' :
@@ -207,8 +194,16 @@ export default function RealtimeBoard({
 
                 {!pendingMemo && <MemoEditor onSubmit={handleMemoSubmit} />}
 
-                {/* Archive Drawer */}
                 <ArchiveDrawer />
+
+                {isFirstVisit && (
+                    <TutorialOverlay
+                        currentStep={currentStep}
+                        onNext={nextStep}
+                        onSkip={skipTutorial}
+                        onComplete={completeTutorial}
+                    />
+                )}
             </CorkBoard>
         </div>
     )
