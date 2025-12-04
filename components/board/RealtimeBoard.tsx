@@ -13,7 +13,6 @@ import TutorialOverlay from '../tutorial/TutorialOverlay'
 import { useTutorial } from '@/hooks/useTutorial'
 import UserBoardMenu from './UserBoardMenu'
 
-
 export default function RealtimeBoard({
     boardId,
     initialMemos,
@@ -207,6 +206,9 @@ export default function RealtimeBoard({
                     />
                 )}
             </CorkBoard>
+
+            {/* User Board Menu - Bottom Right */}
+            <UserBoardMenu />
         </div>
     )
 }
