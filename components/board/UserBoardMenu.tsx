@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { motion, AnimatePresence } from 'framer-motion'
-import { User, ChevronUp, Plus } from 'lucide-react'
+import { User, ChevronRight, Plus, X, LogOut } from 'lucide-react'
 
 interface Board {
     id: string
@@ -31,7 +31,6 @@ export default function UserBoardMenu() {
 
         setUserEmail(user.email || '')
 
-        // Fetch boards: common + public + my private boards
         const { data, error } = await supabase
             .from('boards')
             .select('*')
@@ -43,10 +42,9 @@ export default function UserBoardMenu() {
         }
     }
 
-    const getBoardColor = (board: Board) => {
-        if (board.type === 'common') return 'bg-green-500'
-        if (board.is_public) return 'bg-yellow-500'
-        return 'bg-blue-500'
+    const handleLogout = async () => {
+        await supabase.auth.signOut()
+        router.push('/login')
     }
 
     const getBoardIcon = (board: Board) => {
@@ -56,69 +54,104 @@ export default function UserBoardMenu() {
     }
 
     return (
-        <div className="fixed bottom-4 right-4 z-50">
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 20 }}
-                        className="absolute bottom-20 right-0 w-72 bg-white rounded-lg shadow-2xl border-2 border-wood overflow-hidden"
-                    >
-                        {/* User Info */}
-                        <div className="bg-wood text-white px-4 py-3">
-                            <div className="flex items-center gap-2">
-                                <User size={20} />
-                                <div className="flex-1 text-sm truncate">{userEmail}</div>
-                            </div>
-                        </div>
-
-                        {/* Board List */}
-                        <div className="max-h-96 overflow-y-auto">
-                            {boards.map((board) => (
-                                <button
-                                    key={board.id}
-                                    onClick={() => {
-                                        router.push(`/board/${board.id}`)
-                                        setIsOpen(false)
-                                    }}
-                                    className="w-full px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 text-left flex items-center gap-3"
-                                >
-                                    <span className="text-xl">{getBoardIcon(board)}</span>
-                                    <div className="flex-1 min-w-0">
-                                        <div className="font-bold text-sm truncate">{board.name}</div>
-                                        {board.description && (
-                                            <div className="text-xs text-gray-500 truncate">{board.description}</div>
-                                        )}
-                                    </div>
-                                </button>
-                            ))}
-
-                            {/* Create New Board */}
-                            <button
-                                onClick={() => {
-                                    router.push('/boards/create')
-                                    setIsOpen(false)
-                                }}
-                                className="w-full px-4 py-3 hover:bg-green-50 transition-colors flex items-center gap-3 text-green-600 font-bold"
-                            >
-                                <Plus size={20} />
-                                <span>새 게시판 만들기</span>
-                            </button>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            {/* Toggle Button */}
+        <>
+            {/* Toggle Button (Bottom Right) */}
             <motion.button
-                onClick={() => setIsOpen(!isOpen)}
+                onClick={() => setIsOpen(true)}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                className="w-14 h-14 rounded-full bg-wood text-white shadow-xl flex items-center justify-center hover:bg-wood-dark transition-colors"
+                className="fixed bottom-6 right-6 z-40 w-16 h-16 rounded-full bg-wood text-white shadow-2xl flex items-center justify-center hover:bg-wood-dark transition-colors border-4 border-white"
             >
-                {isOpen ? <ChevronUp size={24} /> : <User size={24} />}
+                <User size={28} />
             </motion.button>
-        </div>
+
+            {/* Overlay */}
+            <AnimatePresence>
+                {isOpen && (
+                    <>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 0.5 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setIsOpen(false)}
+                            className="fixed inset-0 bg-black z-50"
+                        />
+
+                        {/* Right Sidebar Drawer */}
+                        <motion.div
+                            initial={{ x: '100%' }}
+                            animate={{ x: 0 }}
+                            exit={{ x: '100%' }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                            className="fixed top-0 right-0 h-full w-80 bg-[#fdfbf7] shadow-2xl z-50 flex flex-col border-l-4 border-wood"
+                        >
+                            {/* Header */}
+                            <div className="p-6 bg-wood text-white flex justify-between items-center shadow-md">
+                                <div className="flex items-center gap-3 overflow-hidden">
+                                    <div className="bg-white/20 p-2 rounded-full">
+                                        <User size={24} />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="font-bold text-lg truncate">내 프로필</p>
+                                        <p className="text-xs text-white/80 truncate">{userEmail}</p>
+                                    </div>
+                                </div>
+                                <button onClick={() => setIsOpen(false)} className="text-white/80 hover:text-white">
+                                    <X size={24} />
+                                </button>
+                            </div>
+
+                            {/* Board List */}
+                            <div className="flex-1 overflow-y-auto p-4 space-y-2">
+                                <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3 px-2">내 게시판 목록</h3>
+
+                                {boards.map((board) => (
+                                    <button
+                                        key={board.id}
+                                        onClick={() => {
+                                            router.push(`/board/${board.id}`)
+                                            setIsOpen(false)
+                                        }}
+                                        className="w-full p-3 bg-white rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100 flex items-center gap-3 text-left group"
+                                    >
+                                        <span className="text-2xl group-hover:scale-110 transition-transform">{getBoardIcon(board)}</span>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="font-bold text-gray-800 truncate group-hover:text-wood transition-colors">{board.name}</div>
+                                            {board.description && (
+                                                <div className="text-xs text-gray-500 truncate">{board.description}</div>
+                                            )}
+                                        </div>
+                                        <ChevronRight size={16} className="text-gray-300 group-hover:text-wood" />
+                                    </button>
+                                ))}
+                            </div>
+
+                            {/* Footer Actions */}
+                            <div className="p-4 bg-gray-50 border-t border-gray-200 space-y-3">
+                                <button
+                                    onClick={() => {
+                                        router.push('/boards/create')
+                                        setIsOpen(false)
+                                    }}
+                                    className="w-full py-3 bg-green-500 hover:bg-green-600 text-white rounded-xl font-bold shadow-md flex items-center justify-center gap-2 transition-colors"
+                                >
+                                    <Plus size={20} />
+                                    새 게시판 만들기
+                                </button>
+
+                                <button
+                                    onClick={handleLogout}
+                                    className="w-full py-3 bg-white border-2 border-gray-200 hover:bg-gray-50 text-gray-600 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors"
+                                >
+                                    <LogOut size={18} />
+                                    로그아웃
+                                </button>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
+        </>
     )
 }
+
