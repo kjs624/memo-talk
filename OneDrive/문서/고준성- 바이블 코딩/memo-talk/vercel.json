@@ -1,0 +1,5 @@
+{
+    "buildCommand": "cd 'OneDrive/문서/고준성- 바이블 코딩/memo-talk' && npm run build",
+    "installCommand": "cd 'OneDrive/문서/고준성- 바이블 코딩/memo-talk' && npm install",
+    "framework": null
+}
