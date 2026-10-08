@@ -32,3 +32,18 @@ GEMINI_API_KEY=...
 ```bash
 npm run dev
 ```
+
+## pandas 설치 (pip 실패 시 대체 방법)
+
+`pip install pandas` 가 실패하면 아래 스크립트가 대체 방법을 순서대로 시도합니다
+(`--user` → pip 업그레이드 → wheel 전용 → 카카오 미러 → 캐시 무시 → uv → conda).
+
+```powershell
+# Windows
+powershell -ExecutionPolicy Bypass -File scripts\install-pandas.ps1
+```
+
+```bash
+# macOS / Linux
+bash scripts/install-pandas.sh
+```
